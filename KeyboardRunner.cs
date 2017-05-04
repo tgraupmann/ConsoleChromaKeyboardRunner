@@ -61,7 +61,7 @@ namespace ConsoleChromaKeyboardRunner
         {
             foreach (Key key in _sKeys)
             {
-                SetColor(key, Color.Red);
+                SetColor(key, Color.Green);
             }
         }
 
@@ -97,7 +97,7 @@ namespace ConsoleChromaKeyboardRunner
             {
                 while (_sTimer < DateTime.Now)
                 {
-                    _sTimer = DateTime.Now + TimeSpan.FromMilliseconds(250);
+                    _sTimer = DateTime.Now + TimeSpan.FromMilliseconds(100);
                     for (int i = 0; i < GetMapWidth(); ++i)
                     {
                         for (int j = 0; j < (GetMapHeight() - 1); ++j)
@@ -106,8 +106,11 @@ namespace ConsoleChromaKeyboardRunner
                             Key nextKey = _sKeys[i, j+1];
 
                             Color color = GetColor(nextKey);
-                            SetColor(key, color);
-                            Keyboard.Instance.SetKey(key, color);
+                            if (GetColor(key) != color)
+                            {
+                                SetColor(key, color);
+                                Keyboard.Instance.SetKey(key, color);
+                            }
                         }
                     }
 
@@ -117,23 +120,20 @@ namespace ConsoleChromaKeyboardRunner
                         {
                             Key key = _sKeys[i, j];
                             Color color;
-                            switch (random.Next() % 4)
+                            switch (random.Next() % 8)
                             {
                                 case 0:
-                                    color = new Color(1f, 1f, 0f);
-                                    break;
-                                case 1:
-                                    color = new Color(1f, 0.5f, 0f);
-                                    break;
-                                case 2:
-                                    color = new Color(1f, 0f, 0f);
+                                    color = new Color(random.NextDouble(), random.NextDouble(), random.NextDouble());
                                     break;
                                 default:
                                     color = Color.Black;
                                     break;
                             }
-                            SetColor(key, color);
-                            Keyboard.Instance.SetKey(key, color);
+                            if (GetColor(key) != color)
+                            {
+                                SetColor(key, color);
+                                Keyboard.Instance.SetKey(key, color);
+                            }
                         }
                     }
                 }
