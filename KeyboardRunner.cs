@@ -30,6 +30,11 @@ namespace ConsoleChromaKeyboardRunner
                 Key.I,
                 Key.O,
                 Key.P,
+                Key.Oem4,
+                Key.Oem5,
+                Key.Num7,
+                Key.Num8,
+                Key.Num9,
             },
             {
                 Key.A,
@@ -42,6 +47,11 @@ namespace ConsoleChromaKeyboardRunner
                 Key.K,
                 Key.L,
                 Key.Oem7, //;
+                Key.Oem8,
+                Key.Enter,
+                Key.Num4,
+                Key.Num5,
+                Key.Num6,
             },
             {
                 Key.Z,
@@ -54,6 +64,11 @@ namespace ConsoleChromaKeyboardRunner
                 Key.Oem9, //,
                 Key.Oem10, //.
                 Key.Oem11, //?
+                Key.RightShift,
+                Key.Up,
+                Key.Num1,
+                Key.Num2,
+                Key.Num3,
             },
         };
 
