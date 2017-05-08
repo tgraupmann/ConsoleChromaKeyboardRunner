@@ -15,11 +15,25 @@ namespace ConsoleChromaKeyboardRunner
 
         private static DateTime _sTimer = DateTime.Now;
 
-        private static Dictionary<Key, Color> _sColorMap = new Dictionary<Key, Color>();
+        private class KeyData
+        {
+            public Key _mKey;
+            public Color _mColor;
+            public static implicit operator KeyData(Key key)
+            {
+                KeyData keyData = new KeyData();
+                keyData._mKey = key;
+                keyData._mColor = Color.Black;
+                return keyData;
+            }
+        }
 
-        private static Key[,] _sKeys =
+        #region Key layout
+
+        private static KeyData[,] _sKeys =
         {
             {
+                Key.Tab,
                 Key.Q,
                 Key.W,
                 Key.E,
@@ -30,13 +44,18 @@ namespace ConsoleChromaKeyboardRunner
                 Key.I,
                 Key.O,
                 Key.P,
-                Key.Oem4,
-                Key.Oem5,
+                Key.Oem4, //[
+                Key.Oem5, //]
+                Key.Oem6, //\
+                Key.Delete,
+                Key.End,
+                Key.PageDown,
                 Key.Num7,
                 Key.Num8,
                 Key.Num9,
             },
             {
+                Key.CapsLock,
                 Key.A,
                 Key.S,
                 Key.D,
@@ -47,13 +66,18 @@ namespace ConsoleChromaKeyboardRunner
                 Key.K,
                 Key.L,
                 Key.Oem7, //;
-                Key.Oem8,
+                Key.Oem8, //'
                 Key.Enter,
+                Key.Invalid,
+                Key.Invalid,
+                Key.Invalid,
+                Key.Invalid,
                 Key.Num4,
                 Key.Num5,
                 Key.Num6,
             },
             {
+                Key.LeftShift,
                 Key.Z,
                 Key.X,
                 Key.C,
@@ -65,20 +89,18 @@ namespace ConsoleChromaKeyboardRunner
                 Key.Oem10, //.
                 Key.Oem11, //?
                 Key.RightShift,
+                Key.Invalid,
+                Key.Invalid,
+                Key.Invalid,
                 Key.Up,
+                Key.Invalid,
                 Key.Num1,
                 Key.Num2,
                 Key.Num3,
             },
         };
 
-        public static void Start()
-        {
-            foreach (Key key in _sKeys)
-            {
-                SetColor(key, Color.Green);
-            }
-        }
+        #endregion
 
         static int GetMapWidth()
         {
@@ -90,19 +112,25 @@ namespace ConsoleChromaKeyboardRunner
             return _sKeys.GetLength(1);
         }
 
-        static void SetColor(Key key, Color color)
+        private static void SetColor(Key key, Color color)
         {
-            _sColorMap[key] = color;
-            Keyboard.Instance.SetKey(key, color);
+            if (key != Key.Invalid)
+            {
+                Keyboard.Instance.SetKey(key, color);
+            }
         }
 
-        static Color GetColor(Key key)
+        public static void Start()
         {
-            if (_sColorMap.ContainsKey(key))
+            for (int i = 0; i < GetMapWidth(); ++i)
             {
-                return _sColorMap[key];
+                for (int j = 0; j < GetMapHeight(); ++j)
+                {
+                    KeyData keyData = _sKeys[i, j];
+                    keyData._mColor = Color.Green;
+                    SetColor(keyData._mKey, keyData._mColor);
+                }
             }
-            return Color.Black;
         }
 
         public static void Update()
@@ -117,14 +145,12 @@ namespace ConsoleChromaKeyboardRunner
                     {
                         for (int j = 0; j < (GetMapHeight() - 1); ++j)
                         {
-                            Key key = _sKeys[i, j];
-                            Key nextKey = _sKeys[i, j+1];
-
-                            Color color = GetColor(nextKey);
-                            if (GetColor(key) != color)
+                            KeyData keyData = _sKeys[i, j];
+                            KeyData nextKeyData = _sKeys[i, j + 1];
+                            if (keyData._mColor != nextKeyData._mColor)
                             {
-                                SetColor(key, color);
-                                Keyboard.Instance.SetKey(key, color);
+                                keyData._mColor = nextKeyData._mColor;
+                                SetColor(keyData._mKey, keyData._mColor);
                             }
                         }
                     }
@@ -133,21 +159,21 @@ namespace ConsoleChromaKeyboardRunner
                     {
                         for (int j = GetMapHeight() - 1; j < GetMapHeight(); ++j)
                         {
-                            Key key = _sKeys[i, j];
+                            KeyData keyData = _sKeys[i, j];
                             Color color;
                             switch (random.Next() % 8)
                             {
                                 case 0:
-                                    color = new Color(random.NextDouble(), random.NextDouble(), random.NextDouble());
+                                    color = new Color(random.NextDouble(), random.NextDouble(), random.NextDouble(), 1.0);
                                     break;
                                 default:
                                     color = Color.Black;
                                     break;
                             }
-                            if (GetColor(key) != color)
+                            if (keyData._mColor != color)
                             {
-                                SetColor(key, color);
-                                Keyboard.Instance.SetKey(key, color);
+                                keyData._mColor = color;
+                                SetColor(keyData._mKey, keyData._mColor);
                             }
                         }
                     }
@@ -161,9 +187,14 @@ namespace ConsoleChromaKeyboardRunner
         {
             _sWaitForExit = false;
 
-            foreach (Key key in _sKeys)
+            for (int i = 0; i < GetMapWidth(); ++i)
             {
-                SetColor(key, Color.Black);
+                for (int j = 0; j < GetMapHeight(); ++j)
+                {
+                    KeyData keyData = _sKeys[i, j];
+                    keyData._mColor = Color.Black;
+                    SetColor(keyData._mKey, keyData._mColor);
+                }
             }
         }
     }
