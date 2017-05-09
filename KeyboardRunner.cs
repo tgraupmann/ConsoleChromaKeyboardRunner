@@ -15,6 +15,8 @@ namespace ConsoleChromaKeyboardRunner
 
         private static DateTime _sTimer = DateTime.Now;
 
+        private static Random _sRandom = new Random(123);
+
         private class KeyData
         {
             public Key _mKey;
@@ -135,7 +137,6 @@ namespace ConsoleChromaKeyboardRunner
 
         public static void Update()
         {
-            Random random = new Random(123);
             while (_sWaitForExit)
             {
                 while (_sTimer < DateTime.Now)
@@ -161,10 +162,10 @@ namespace ConsoleChromaKeyboardRunner
                         {
                             KeyData keyData = _sKeys[i, j];
                             Color color;
-                            switch (random.Next() % 8)
+                            switch (_sRandom.Next() % 8)
                             {
                                 case 0:
-                                    color = new Color(random.NextDouble(), random.NextDouble(), random.NextDouble(), 1.0);
+                                    color = new Color(_sRandom.NextDouble(), _sRandom.NextDouble(), _sRandom.NextDouble(), 1.0);
                                     break;
                                 default:
                                     color = Color.Black;
